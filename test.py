@@ -28,6 +28,8 @@ from subprocess import Popen, PIPE
 from netaddr import IPNetwork
 
 debug = False;
+net = False;
+timeout = str(30);
 
 DNULL = open(os.devnull, 'w')
 
@@ -43,6 +45,8 @@ proto_list = ["ssl3"]
 
 def generate_cmd(proto, host, port):
     cmd = []
+    cmd.append("timeout")
+    cmd.append(timeout)
     cmd.append("openssl")
     cmd.append("s_client")
     cmd.append("-" + proto)
@@ -70,13 +74,14 @@ def print_usage(not_enough=False, too_much=False):
         print "You can't specifiy an host and a network"
 
     print """Usage:
-    {0} [-d|--debug] (-n|--network) <net>
-    {0} [-d|--debug] <host>
+    {0} [-d|--debug] [(-t|--timeout) <timeout>] (-n|--network) <net>
+    {0} [-d|--debug] [(-t|--timeout) <timeout>] <host>
     {0} (-h|--help)
 
     <host> the host to analyse
     -d, --debug: print debug informations
     -n, --network: analyse all the hosts in the given network
+    -t, --timeout: set the timemout in seconds, default 30 seconds
     -h, --help: print this help information
     """.format(sys.argv[0])
 
@@ -107,8 +112,8 @@ def analyse_net(net):
         analyse_host(str(ip))
 
 try:
-    options, remainder = getopt.getopt(sys.argv[1:], "dhn:", ["debug", "help",
-"net="])
+    options, remainder = getopt.getopt(sys.argv[1:], "dhn:t:", ["debug", "help",
+"net=", "timeout="])
 except getopt.GetoptError as err:
     print str(err)
     print_usage()
@@ -121,12 +126,14 @@ for opt, arg in options:
         print_usage()
     elif opt in ("-n", "--network"):
         net = arg
+    elif opt in ("-t", "--timeout"):
+        timeout = arg
 
 if net and remainder:
     print_usage(too_much=True)
     sys.exit(2)
 elif remainder:
-    analyse_host(remainder)
+    analyse_host(remainder[0])
 elif net:
     analyse_net(net)
 else:
@@ -134,4 +141,4 @@ else:
     sys.exit(2)
 
 
-
+# vim: set ts=4 sw=4 expandtab:
