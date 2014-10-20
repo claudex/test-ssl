@@ -15,3 +15,6 @@ the common port for SSL. Currently it tests SMTP, POP3, IMAP and HTTPS.
     -t, --timeout: set the timemout in seconds, default 30 seconds
     -h, --help: print this help information
 
+#Dependancies
+
+	Require Python2 and python-netaddr module
