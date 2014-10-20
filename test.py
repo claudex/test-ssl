@@ -62,18 +62,18 @@ def generate_cmd(proto, host, port):
         elif port in pop_port:
             cmd.append("pop")
         else:
-            print "Unsupported port: " + str(port)
+            print("Unsupported port: " + str(port))
             sys.exit(2)
 
     return cmd
 
 def print_usage(not_enough=False, too_much=False):
     if not_enough:
-        print "You should specify an host or a network"
+        print("You should specify an host or a network")
     if too_much:
-        print "You can't specifiy an host and a network"
+        print("You can't specifiy an host and a network")
 
-    print """Usage:
+    print("""Usage:
     {0} [-d|--debug] [(-t|--timeout) <timeout>] (-n|--network) <net>
     {0} [-d|--debug] [(-t|--timeout) <timeout>] <host>
     {0} (-h|--help)
@@ -83,10 +83,10 @@ def print_usage(not_enough=False, too_much=False):
     -n, --network: analyse all the hosts in the given network
     -t, --timeout: set the timemout in seconds, default 30 seconds
     -h, --help: print this help information
-    """.format(sys.argv[0])
+    """.format(sys.argv[0]))
 
 def analyse_host(host):
-    print "Analysing " + host + ": " 
+    print("Analysing " + host + ": ") 
 
     for proto in proto_list:
         for port in port_list:
@@ -96,14 +96,14 @@ def analyse_host(host):
             err = openssl.communicate()[1]
 
             if openssl.returncode != 0:
-                if string.find(err, "alert handshake failure") != -1:
+                if err.find(b"alert handshake failure") != -1:
                     if debug:
-                        print str(port) + ": ok, no " + proto
+                        print(str(port) + ": ok, no " + proto)
                 else:
                     if debug:
-                        print str(port) + ": connection error"
+                        print(str(port) + ": connection error")
             else:
-                print str(port) + ": " + proto + " enable"
+                print(str(port) + ": " + proto + " enable")
 
 def analyse_net(net):
     ip_list = IPNetwork(net)
@@ -115,7 +115,7 @@ try:
     options, remainder = getopt.getopt(sys.argv[1:], "dhn:t:", ["debug", "help",
 "net=", "timeout="])
 except getopt.GetoptError as err:
-    print str(err)
+    print(str(err))
     print_usage()
     sys.exit(2)
 
